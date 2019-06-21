@@ -1,24 +1,25 @@
 package br.com.guilherme.alura.forumalura.controller;
 
-import br.com.guilherme.alura.forumalura.dto.TopicoDTO;
-import br.com.guilherme.alura.forumalura.model.Curso;
-import br.com.guilherme.alura.forumalura.model.Topico;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
+import br.com.guilherme.alura.forumalura.dto.TopicoDTO;
+import br.com.guilherme.alura.forumalura.model.Topico;
+import br.com.guilherme.alura.forumalura.repository.TopicoRepository;
 
 @RestController
 public class TopicosController {
+	
+	@Autowired
+	private TopicoRepository topicoRepository;
 
     @RequestMapping("/topicos")
     public List<TopicoDTO> lista() {
-        Topico topico = new Topico("Dúvida Spring boot",
-                "Tenho uma duvida sobre spring boot",
-                new Curso("SpringBoot 1", "Programação"));
+        List<Topico> topicos = topicoRepository.findAll();
 
-        return TopicoDTO.converter(asList(topico, topico, topico));
+        return TopicoDTO.converter(topicos);
     }
 }
