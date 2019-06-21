@@ -3,6 +3,7 @@ package br.com.guilherme.alura.forumalura.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.com.guilherme.alura.forumalura.controller.form.TopicoForm;
+import br.com.guilherme.alura.forumalura.dto.AtualizacaoTopicoFormDTO;
 import br.com.guilherme.alura.forumalura.dto.DetalhesDoTopicoDTO;
 import br.com.guilherme.alura.forumalura.dto.TopicoDTO;
+import br.com.guilherme.alura.forumalura.dto.TopicoFormDTO;
 import br.com.guilherme.alura.forumalura.model.Topico;
 import br.com.guilherme.alura.forumalura.repository.CursoRepository;
 import br.com.guilherme.alura.forumalura.repository.TopicoRepository;
@@ -44,7 +47,7 @@ public class TopicosController {
     }
     
     @PostMapping
-    public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoForm form, UriComponentsBuilder builderURI) {
+    public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoFormDTO form, UriComponentsBuilder builderURI) {
 		Topico topico = form.converter(cursoRepository);
     	topicoRepository.save(topico);
     	
@@ -57,4 +60,14 @@ public class TopicosController {
     	Topico topico = topicoRepository.getOne(id);
     	return new DetalhesDoTopicoDTO(topico);
     }
+    
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<TopicoDTO> atualizar(@PathVariable("id") Long id,
+    										   @RequestBody @Valid AtualizacaoTopicoFormDTO form) {
+    	
+    	Topico topico = form.atualizar(id, topicoRepository);
+    	return ResponseEntity.ok(new TopicoDTO(topico));
+    }
 }
+	
