@@ -1,7 +1,13 @@
 package br.com.guilherme.alura.forumalura.controller;
 
 import br.com.guilherme.alura.forumalura.dto.LoginFormDTO;
+import br.com.guilherme.alura.forumalura.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +19,22 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AutenticacaoController {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping
     public ResponseEntity<?> autenticar(@RequestBody @Valid LoginFormDTO form) {
-        System.out.println(form.getEmail());
-        System.out.println(form.getSenha());
-
-        return ResponseEntity.ok().build();
+        UsernamePasswordAuthenticationToken dadosLogin = form.converter();
+        try {
+            Authentication authentication = authenticationManager.authenticate(dadosLogin);
+            String token = tokenService.gerarToken(authentication);
+            System.out.println(token);
+            return ResponseEntity.ok().build();
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
