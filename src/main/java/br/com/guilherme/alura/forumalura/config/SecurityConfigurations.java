@@ -15,7 +15,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     // Configuração de autenticação
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
+
     }
 
     // Configuração de autorização
@@ -23,7 +23,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/topicos").permitAll()
-                .antMatchers(HttpMethod.GET, "/topicos/*").permitAll();
+                .antMatchers(HttpMethod.GET, "/topicos/*").permitAll()
+                .anyRequest().authenticated()
+                .and().formLogin();
     }
 
     // Configuraçõe de recursos estaticos: js, css, imagens
